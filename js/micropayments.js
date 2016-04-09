@@ -1,12 +1,17 @@
+var isActive = true;
+
+window.onfocus = function() {
+  isActive = true;
+};
+
+window.onblur = function() {
+  isActive = false;
+};
+
 var nested = false;
 
 $(document).ready(function() {
     requestInitial();
-
-    setInterval(function() {
-        console.log("Requesting time-rated endpoint...");
-        requestTimeRated();
-    }, 15000);
 });
 
 function requestInitial(){
@@ -19,6 +24,17 @@ function requestInitial(){
             console.log("Access granted");
             console.log(resp);
             $(".adsbygoogle").remove();
+
+            /* Start time-rated payments */
+            setInterval(function() {
+                if (isActive) {
+                    console.log("Requesting time-rated endpoint...");
+                    requestTimeRated();
+                }
+                else {
+                    console.log("Tab inactive");
+                }
+            }, 3000);
         },
         error: function(xhr, textStatus, errorThrown) {
             if (xhr.status == 402) {
@@ -29,6 +45,12 @@ function requestInitial(){
                         console.log("Making 2nd request...");
                         requestInitial();
                     }, 500);
+                }
+                else {
+                    setTimeout(function() {
+                        console.log("Rerequesting...");
+                        requestInitial();
+                    }, 5000);
                 }
             }
         },

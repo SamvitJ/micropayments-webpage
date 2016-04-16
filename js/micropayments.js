@@ -1,3 +1,8 @@
+// session state
+var cookieName = "payments-cookie";
+var cookieValue = "session-tracker";
+
+// tab active state
 var isActive = true;
 
 window.onfocus = function() {
@@ -8,10 +13,20 @@ window.onblur = function() {
   isActive = false;
 };
 
+// request loop state
 var nested = false;
 
+// page load behavior
 $(document).ready(function() {
-    requestInitial();
+    if (!readCookie(cookieName)) {
+        requestInitial();
+    }
+    else {
+        console.log("Existing cookie", document.cookie);
+
+        $(".adsbygoogle").remove();
+        startTimeRatedLoop();
+    }
 });
 
 function requestInitial(){
@@ -23,18 +38,9 @@ function requestInitial(){
         success: function(resp) {
             console.log("Access granted");
             console.log(resp);
-            $(".adsbygoogle").remove();
 
-            /* Start time-rated payments */
-            setInterval(function() {
-                if (isActive) {
-                    console.log("Requesting time-rated endpoint...");
-                    requestTimeRated();
-                }
-                else {
-                    console.log("Tab inactive");
-                }
-            }, 3000);
+            $(".adsbygoogle").remove();
+            startTimeRatedLoop();
         },
         error: function(xhr, textStatus, errorThrown) {
             if (xhr.status == 402) {
@@ -42,6 +48,11 @@ function requestInitial(){
                 if (!nested) {
                     nested = true;
                     setTimeout(function() {
+                        var schemeID = xhr.getResponseHeader("scheme_id");
+                        var expiration = xhr.getResponseHeader("expiration");
+                        createCookie(cookieName, schemeID, expiration);
+                        console.log("Created cookie", document.cookie);
+
                         console.log("Making 2nd request...");
                         requestInitial();
                     }, 500);
@@ -59,6 +70,18 @@ function requestInitial(){
             alert(err);
         }
     })
+}
+
+function startTimeRatedLoop() {
+    setInterval(function() {
+        if (isActive) {
+            console.log("Requesting time-rated endpoint...");
+            requestTimeRated();
+        }
+        else {
+            console.log("Tab inactive");
+        }
+    }, 3000);
 }
 
 function requestTimeRated(){

@@ -32,7 +32,7 @@ $(document).ready(function() {
 function requestInitial(){
     $.ajax({
         type: "GET",
-        url: "http://10.8.220.169:5050/payable",
+        url: "http://10.8.125.119:5000/payable",
         crossDomain: true,
         contentType: "text/html; charset=utf-8",
         success: function(resp) {
@@ -87,7 +87,7 @@ function startTimeRatedLoop() {
 function requestTimeRated(){
     $.ajax({
         type: "GET",
-        url: "http://10.8.220.169:5050/payable/timerated",
+        url: "http://10.8.125.119:5000/payable/timerated",
         crossDomain: true,
         contentType: "text/html; charset=utf-8",
         success: function(resp) {

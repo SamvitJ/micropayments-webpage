@@ -2,6 +2,9 @@
 var cookieName = "payments-cookie";
 var cookieValue = "session-tracker";
 
+// server IP
+var serverIP = "http://10.8.125.119:5000"
+
 // tab active state
 var isActive = true;
 
@@ -32,7 +35,7 @@ $(document).ready(function() {
 function requestInitial(){
     $.ajax({
         type: "GET",
-        url: "http://10.8.125.119:5000/payable",
+        url: serverIP + "/payable",
         crossDomain: true,
         contentType: "text/html; charset=utf-8",
         success: function(resp) {
@@ -87,7 +90,7 @@ function startTimeRatedLoop() {
 function requestTimeRated(){
     $.ajax({
         type: "GET",
-        url: "http://10.8.125.119:5000/payable/timerated",
+        url: serverIP + "/payable/timerated",
         crossDomain: true,
         contentType: "text/html; charset=utf-8",
         success: function(resp) {
